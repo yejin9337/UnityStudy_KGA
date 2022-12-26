@@ -6,19 +6,26 @@ public class Player : MonoBehaviour
 {
     [SerializeField]
     private float speed = 1.0f;
-    void Start()
-    {
-        
-    }
 
+    private Transform _enemy;
+
+
+
+    void Awake()
+    {
+       
+    }
     void Update()
     {
         float xInput = Input.GetAxis("Horizontal");
         float zInput = Input.GetAxis("Vertical");
 
-        float xSpeed = xInput * speed;
-        float zSpeed = zInput * speed;
+        transform.position += new Vector3(xInput, 0, zInput) * speed * Time.deltaTime;
 
-        transform.position = new Vector3(xSpeed, 0, zSpeed);
+        float dist = Vector3.Distance(_enemy.position, transform.position);
+        //if()
+        //{
+        //    
+        //}
     }
 }
