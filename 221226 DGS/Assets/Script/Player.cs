@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
     [SerializeField] private int _speed = 4;
     [SerializeField] private int _power = 10;
     [SerializeField] private int _maxHP = 100;
+    [SerializeField] private int _defense = 5;
     [SerializeField] private Player _enemy;
 
 
@@ -51,9 +52,10 @@ public class Player : MonoBehaviour
 
     public void OnDamaged(int damege)
     {
-        _currentHP = _currentHP - damege;
+        _currentHP = _currentHP - (damege - _defense)
+            ;
         _hpSlider.value = _currentHP * 0.01f;
-        _damageUI.StartEffect(damege);
+        _damageUI.StartEffect((damege - _defense));
 
         if(_currentHP <= 0)
         {
