@@ -3,14 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Player : MonoBehaviour
+public class Player2 : MonoBehaviour
 {
-    [SerializeField] private int _speed = 4;
+    [SerializeField] private int _speed = 5;
     [SerializeField] private int _power = 10;
     [SerializeField] private int _maxHP = 100;
     [SerializeField] private int _defense = 5;
-    [SerializeField] private Player _enemy;
+    [SerializeField] private Player1 _enemy;
 
+    private int _damage { get; set; }
+    private const int FIRST_SKILL_COOLTIME = 2;
+    private int _currentFirstSkillCoolTime = 0;
+    private const int SECOND_SKILL_COOLTIME = 4;
+    private int _currentSecondSkillCoolTime = 0;
 
     private float _actGauge = 0;
     private int _currentHP;
@@ -32,7 +37,7 @@ public class Player : MonoBehaviour
         _actGauge += Time.deltaTime * _speed;
         _actGaugeSlider.value = _actGauge * 0.01f;
 
-        if(_actGauge > 100)
+        if (_actGauge > 100)
         {
             Debug.Log($"{this.name}의 공격차례");
             Attack();
@@ -43,21 +48,56 @@ public class Player : MonoBehaviour
     {
         Debug.Log($"{this.gameObject.name} 의 공격!");
 
+        _damage = 0;
+        _currentFirstSkillCoolTime--;
+        _currentSecondSkillCoolTime--;
+
+        if (_currentSecondSkillCoolTime < 0)
+        {
+            SecondSkill();
+        }
+        else if (_currentFirstSkillCoolTime < 0)
+        {
+            FirstSkill();
+        }
+        else
+        {
+            _damage = _power;
+        }
+
         // 상대방의 OnDamaged 호출하기
-        _enemy.OnDamaged(_power);
+        _enemy.OnDamaged(_damage);
 
         // 나의 행동 게이지 0으로 만들기
         _actGauge = 0;
     }
 
+    private void FirstSkill()
+    {
+        _damage = (int)Mathf.Round(_power * 1.3f);
+        _currentFirstSkillCoolTime = FIRST_SKILL_COOLTIME;
+    }
+
+    private void SecondSkill()
+    {
+        _damage = (int)Mathf.Round(_power * 0.9f);
+        _enemy.OnDamaged(_damage);
+        _currentSecondSkillCoolTime = SECOND_SKILL_COOLTIME;
+    }
+
     public void OnDamaged(int damege)
     {
-        _currentHP = _currentHP - (damege - _defense)
-            ;
+        if (damege <= _defense)
+        {
+            return;
+        }
+
+        _currentHP = _currentHP - (damege - _defense);
+
         _hpSlider.value = _currentHP * 0.01f;
         _damageUI.StartEffect((damege - _defense));
 
-        if(_currentHP <= 0)
+        if (_currentHP <= 0)
         {
             Debug.Log($"{this.gameObject.name} 가 죽었다");
             gameObject.SetActive(false);
@@ -70,4 +110,5 @@ public class Player : MonoBehaviour
         _currentHP = _maxHP;
         _actGauge = 0;
     }
+
 }
