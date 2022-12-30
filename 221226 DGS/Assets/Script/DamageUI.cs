@@ -5,13 +5,12 @@ using TMPro;
 
 public class DamageUI : MonoBehaviour
 {
-    private TextMeshProUGUI _text;
+    [SerializeField] private TextMeshProUGUI _text;
     private Color _color;
     private Vector2 _position;
 
     private void Awake()
     {
-        _text = GetComponentInChildren<TextMeshProUGUI>();
         _color = new Color(0,0,0,0);
         _position = transform.position;
     }
