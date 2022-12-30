@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Player : MonoBehaviour
+public class Player2 : MonoBehaviour
 {
-    [SerializeField] private int _speed = 4;
+    [SerializeField] private int _speed = 5;
     [SerializeField] private int _power = 10;
     [SerializeField] private int _maxHP = 100;
     [SerializeField] private int _defense = 5;
-    [SerializeField] private Player _enemy;
+    [SerializeField] private Player1 _enemy;
 
     private int _damage { get; set; }
-    private const int _firstSkillCoolTime = 3;
+    private const int FIRST_SKILL_COOLTIME = 2;
     private int _currentFirstSkillCoolTime = 0;
-    private const int _secondSkillCoolTime = 3;
+    private const int SECOND_SKILL_COOLTIME = 4;
     private int _currentSecondSkillCoolTime = 0;
 
     private float _actGauge = 0;
@@ -37,7 +37,7 @@ public class Player : MonoBehaviour
         _actGauge += Time.deltaTime * _speed;
         _actGaugeSlider.value = _actGauge * 0.01f;
 
-        if(_actGauge > 100)
+        if (_actGauge > 100)
         {
             Debug.Log($"{this.name}ÀÇ °ø°ÝÂ÷·Ê");
             Attack();
@@ -54,11 +54,11 @@ public class Player : MonoBehaviour
 
         if (_currentSecondSkillCoolTime < 0)
         {
-            _damage = SecondSkill();
+            SecondSkill();
         }
         else if (_currentFirstSkillCoolTime < 0)
         {
-            _damage = FirstSkill();
+            FirstSkill();
         }
         else
         {
@@ -72,34 +72,32 @@ public class Player : MonoBehaviour
         _actGauge = 0;
     }
 
-    private int FirstSkill()
+    private void FirstSkill()
     {
-        _currentHP += (int)(_maxHP * 0.2f);
-        _hpSlider.value = _currentHP * 0.01f;
-        _currentFirstSkillCoolTime = _firstSkillCoolTime;
-        return _damage;
+        _damage = (int)Mathf.Round(_power * 1.3f);
+        _currentFirstSkillCoolTime = FIRST_SKILL_COOLTIME;
     }
 
-    private int SecondSkill()
+    private void SecondSkill()
     {
-        _damage = 50 + (int)(_defense * 0.1f);
-        _currentSecondSkillCoolTime = _secondSkillCoolTime;
-        return _damage;
+        _damage = (int)Mathf.Round(_power * 0.9f);
+        _enemy.OnDamaged(_damage);
+        _currentSecondSkillCoolTime = SECOND_SKILL_COOLTIME;
     }
 
     public void OnDamaged(int damege)
     {
-        if(damege <= _defense)
+        if (damege <= _defense)
         {
             return;
         }
 
         _currentHP = _currentHP - (damege - _defense);
-            
+
         _hpSlider.value = _currentHP * 0.01f;
         _damageUI.StartEffect((damege - _defense));
 
-        if(_currentHP <= 0)
+        if (_currentHP <= 0)
         {
             Debug.Log($"{this.gameObject.name} °¡ Á×¾ú´Ù");
             gameObject.SetActive(false);
@@ -112,4 +110,5 @@ public class Player : MonoBehaviour
         _currentHP = _maxHP;
         _actGauge = 0;
     }
+
 }
